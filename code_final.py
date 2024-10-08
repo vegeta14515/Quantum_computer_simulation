@@ -41,45 +41,40 @@ class Qubits:
         self.attributes["amplitudes"][1] = complex(round(st.randbelow(10001) / 100, 2),round(st.randbelow(10001) / 100, 2))
         return self.attributes["amplitudes"]
     
-    def normalisation(self):
+    def normalization(self):
         module : int = abs(self.attributes["amplitudes"][0])**2 + abs(self.attributes["amplitudes"][1])**2
         module_sqrt : int = sympy.sqrt(module)
         if module!=1 : 
             self.attributes["amplitudes"][0] /= module_sqrt
             self.attributes["amplitudes"][1] /= module_sqrt
-        return self.amplitudes
+        return self.attributes["amplitudes"]
     
     def probability_def(self):
         self.attributes["probabilities"][0]=abs(self.attributes["amplitudes"][0])**2
         self.attributes["probabilities"][1]=abs(self.attributes["amplitudes"][1])**2
-        return self.probabilities
+        return self.attributes["probabilities"]
     
     def initialize_qubit(self):
         self.amplitudes_def()
         self.normalization()
         self.probability_def()
     
-    """
-    
-    def __getitem__(self, qubit_index):
-        return self.qubits.get(qubit_index, f"Qubit à l'index {qubit_index} non trouvé.")
+    def __getitem__(self, key):
+    # Accès aux attributs comme s'ils faisaient partie d'un dictionnaire
+        return self.attributes.get(key, f"Clé '{key}' inexistante.")
 
-    def __setitem__(self, qubit_index, new_values):
-        # Permet de modifier les attributs d'un qubit spécifique
-        if qubit_index in self.qubits:
-            if isinstance(new_values, dict):
-                for key, value in new_values.items():
-                    self.qubits[qubit_index][key] = value
-            else:
-                raise ValueError("Les nouvelles valeurs doivent être fournies sous forme de dictionnaire.")
+    def __setitem__(self, key, value):
+        # Modification des attributs comme s'ils faisaient partie d'un dictionnaire
+        if key in self.attributes:
+            self.attributes[key] = value
         else:
-            raise KeyError(f"Qubit à l'index {qubit_index} non trouvé.")
+            raise KeyError(f"Clé '{key}' inexistante.")
 
     def __repr__(self):
-        # Représentation lisible de l'objet Register_qubits
-        return f"Register_qubits(register={self.register_number}, qubits={self.qubits})"
+        # Représentation lisible de l'objet Qubits
+        return f"Qubits({self.attributes})"
 
-    """
+
     
 class Register_qubits:
     def __init__(self,register_qubits_number : int):
@@ -146,16 +141,16 @@ class Register_bits:
         else:
             raise KeyError(f"Le bit à la position {key} n'existe pas dans ce registre.")
 
-r_q_0 = Register_qubits(0)
-r_b_0 = Register_bits(0)
-print(r_b_0[7])
+#r_q_0 = Register_qubits(0)
+#r_b_0 = Register_bits(0)
+#print(r_b_0[7])
         
         
         
-        
-        
-        
-        
+qubit_0 = Qubits(1,0,"created",0,"generation")
+print(qubit_0)
+qubit_0.initialize_qubit()
+print(qubit_0)
         
         
         
