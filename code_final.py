@@ -1,4 +1,4 @@
-import secrets as st, sympy
+import secrets as st, sympy, math, random
 
 """
 
@@ -31,10 +31,12 @@ class Qubits:
             "position_qubits": register_qubits_position,
             "state": state,
             "value": value,
-            "amplitudes": [0 + 0j, 0 + 0j],
-            "probabilities": [0, 0],
+            "amplitudes": [1 + 0j, 0 + 0j],
+            "probabilities": [1.00, 0.00],
             "generation_method": generation_method
         }
+        
+        self.initialize_qubit()
         
     def amplitudes_def(self):
         self.attributes["amplitudes"][0] = complex(round(st.randbelow(10001) / 100, 2),round(st.randbelow(10001) / 100, 2))
@@ -43,15 +45,17 @@ class Qubits:
     
     def normalization(self):
         module : int = abs(self.attributes["amplitudes"][0])**2 + abs(self.attributes["amplitudes"][1])**2
-        module_sqrt : int = sympy.sqrt(module)
+        module_sqrt : int = math.sqrt(module)
         if module!=1 : 
-            self.attributes["amplitudes"][0] /= module_sqrt
-            self.attributes["amplitudes"][1] /= module_sqrt
+            self.attributes["amplitudes"][0] = self.attributes["amplitudes"][0]/module_sqrt
+            self.attributes["amplitudes"][0] = complex(round(complex(self.attributes["amplitudes"][0]).real, 2), round(complex(self.attributes["amplitudes"][0]).imag, 2))
+            self.attributes["amplitudes"][1] = self.attributes["amplitudes"][1]/module_sqrt
+            self.attributes["amplitudes"][1] = complex(round(complex(self.attributes["amplitudes"][1]).real, 2), round(complex(self.attributes["amplitudes"][1]).imag, 2))
         return self.attributes["amplitudes"]
     
     def probability_def(self):
-        self.attributes["probabilities"][0]=abs(self.attributes["amplitudes"][0])**2
-        self.attributes["probabilities"][1]=abs(self.attributes["amplitudes"][1])**2
+        self.attributes["probabilities"][0] = round(abs(self.attributes["amplitudes"][0])**2,2)
+        self.attributes["probabilities"][1] = round(abs(self.attributes["amplitudes"][1])**2,2)
         return self.attributes["probabilities"]
     
     def initialize_qubit(self):
@@ -60,24 +64,41 @@ class Qubits:
         self.probability_def()
     
     def __getitem__(self, key):
-    # Accès aux attributs comme s'ils faisaient partie d'un dictionnaire
         return self.attributes.get(key, f"Clé '{key}' inexistante.")
 
     def __setitem__(self, key, value):
-        # Modification des attributs comme s'ils faisaient partie d'un dictionnaire
         if key in self.attributes:
             self.attributes[key] = value
         else:
             raise KeyError(f"Clé '{key}' inexistante.")
 
     def __repr__(self):
-        # Représentation lisible de l'objet Qubits
-        return f"Qubits({self.attributes})"
-
-
+        return str(self.attributes)
     
+    def Mesure(self):
+        result = random.choices([0, 1], weights=self.attributes["probabilities"])[0]
+        if result == 0:
+            self.attributes["amplitudes"] = [1 + 0j, 0 + 0j]
+        else:
+            self.attributes["amplitudes"] = [0 + 0j, 1 + 0j]
+        
+        self.attributes["probabilities"] = [1.0 if result == 0 else 0.0, 1.0 if result == 1 else 0.0]
+        self.attributes["state"] = "measured"
+        self.attributes["value"] = result
+
+        return result
+
+qubit_0 = Qubits(0,0,"created",0,"generation")
+print(qubit_0)
+qubit_0.Mesure()
+print(qubit_0)
+ 
+ 
+ 
+ 
+ 
 class Register_qubits:
-    def __init__(self,register_qubits_number : int):
+    def __init__(self, register_qubits_number : int):
         self.register_number = register_qubits_number # number of registers
         r : int = register_qubits_number
         q_0 = Qubits(r,0,"created",0,"generation")
@@ -88,7 +109,11 @@ class Register_qubits:
         q_5 = Qubits(r,5,"created",0,"generation")
         q_6 = Qubits(r,6,"created",0,"generation")
         q_7 = Qubits(r,7,"created",0,"generation")
-    
+
+
+def modify(qubit, value : str, after):
+    qubit.attributes[value] = after
+
 #    def __str__(self):
 #       return f"Register Number: {self.register_number}"
 
@@ -111,7 +136,6 @@ class Bits:
     
     
     def __repr__(self):
-        # Représentation lisible des attributs de l"objet Bits
         return f"Bits(register={self.register_bits_number}, position={self.position_bits}, value={self.value})"
     
 class Register_bits:
@@ -131,7 +155,7 @@ class Register_bits:
             self.bits.append(Bits(register_bits_number, i, 0))
             
     def __getitem__(self, key):
-        # Permet d"accéder aux bits
+        # Permet d'accéder aux bits
         return self.bits[key]
 
     def __setitem__(self, key, value):
@@ -147,11 +171,7 @@ class Register_bits:
         
         
         
-qubit_0 = Qubits(1,0,"created",0,"generation")
-print(qubit_0)
-qubit_0.initialize_qubit()
-print(qubit_0)
-        
+
         
         
         
@@ -167,7 +187,7 @@ class Gate:
 """
 
 ce qu"il reste à faire : 
--implémenter le mode génération et attribution pour les probas
+-implémenter le mode génération et attribution pour les probas et la normalisation
 -
 -
 
