@@ -5,7 +5,7 @@ print("")
 class Qubits:
     def __init__(
                  self,
-                 register_qubits_number : int, # 0-N
+                 position_register_qubits : int, # 0-N
                  qubits_position : int, # 0-n
                  # state : dict,  [created,measured,superposed,entangled]
                  value : int, # |0> or |1>
@@ -14,7 +14,7 @@ class Qubits:
                  ):
         
         self.attributes = {
-            "register_qubits_number": register_qubits_number,
+            "position_register_qubits": position_register_qubits,
             "position_qubits": qubits_position,
             "state" : {
                 "created" :  0,
@@ -142,7 +142,7 @@ class Register_qubits:
         
         if generation_method == "generation":
             for n in range(size):
-                qubit = Qubits(position_register_qubits, 0, generation_method)
+                qubit = Qubits(position_register_qubits, n, 0, generation_method)
                 self.qubits.append(qubit)
         
         elif generation_method == "attribution":
@@ -166,12 +166,12 @@ class Register_qubits:
     
     def __repr__(self):
         qubits_info = ', '.join([str(qubit.attributes) for qubit in self.qubits])
-        return f"Register_qubits(Position: {self.attributes['position_register_qubits']}, Size: {self.attributes['size']}, Qubits: [{qubits_info}])"
+        return f"Register_qubits({self.attributes}, Qubits: [{qubits_info}])"
 
 
 
 # Exemple d'utilisation
-r_0 = Register_qubits(0,2,"attribution",1+0j,0+0j)
+r_0 = Register_qubits(0,2,"generation")
 
 # Accéder au premier qubit
 first_qubit = r_0.get_qubit(0)
@@ -179,8 +179,6 @@ first_qubit = r_0.get_qubit(0)
 print(r_0)
 
 print("")
-
-print(first_qubit.attributes)
 
 # Utiliser la méthode de mesure de Qubits
 # first_qubit.Measure_chained(100000)
