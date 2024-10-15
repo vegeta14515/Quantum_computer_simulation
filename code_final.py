@@ -2,20 +2,26 @@ import secrets as st, sympy, math, random
 
 print("")
 
+class QubitState:
+    def __init__(self, value=None):
+        self.value = value  # 0, 1, ou None pour indiquer une superposition
+
+    def __repr__(self):
+        return f"QubitState(value={self.value})"
+
 class Qubits:
     def __init__(
                  self,
                  position_register_qubits : int, # 0-N
-                 qubits_position : int, # 0-n
-                 # state : dict,  [created,measured,superposed,entangled]
-                 value : int, # |0> or |1>
+                 position_qubits : int, # 0-n
+                 value : int, # 0 or 1 or none
                  generation_method : str, # generation,attribution
                  *args
                  ):
         
         self.attributes = {
             "position_register_qubits": position_register_qubits,
-            "position_qubits": qubits_position,
+            "position_qubits": position_qubits,
             "state" : {
                 "created" :  0,
                 "measured" : 0,
@@ -104,7 +110,7 @@ class Qubits:
                 count_1 += 1
             else : 
                 raise ValueError(f"Une erreur est survenue lors de la mesure")
-        print(f"Nombre de |0> mesurés : {count_0/100000}, Nombre de |1> mesurés : {count_1/100000}")
+        print(f"Nombre de |0> mesurés : {count_0/nb_measure}, Nombre de |1> mesurés : {count_1/nb_measure}")
         return count_0, count_1
                     
     
@@ -184,22 +190,6 @@ print("")
 # first_qubit.Measure_chained(100000)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #    def __str__(self):
 #       return f"Register Number: {self.register_number}"
 
@@ -251,12 +241,6 @@ class Register_bits:
 #r_q_0 = Register_qubits(0)
 #r_b_0 = Register_bits(0)
 #print(r_b_0[7])
-        
-        
-        
-
-        
-        
         
         
 
