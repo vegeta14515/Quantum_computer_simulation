@@ -11,74 +11,67 @@ class QubitState:
 
 class Qubits:
     def __init__(
-                 self,
-                 position_register_qubits : int, # 0-N
-                 position_qubits : int, # 0-n
-                 value : int, # 0 or 1 or none
-                 generation_method : str, # generation,attribution
-                 *args
-                 ):
-        
+        self,
+        position_register_qubits: int,  # 0-N
+        position_qubits: int,  # 0-n
+        value: int,  # 0 or 1 or None
+        generation_method: str,  # generation, attribution
+        *args
+    ):
         self.attributes = {
             "position_register_qubits": position_register_qubits,
             "position_qubits": position_qubits,
-            "state" : {
-                "created" :  0,
-                "measured" : 0,
-                "superposed" : 0,
-                "entangled" : 0
-                },
+            "state": {
+                "created": 0,
+                "measured": 0,
+                "superposed": 0,
+                "entangled": 0
+            },
             "value": value,
             "amplitudes": [0 + 0j, 0 + 0j],
             "probabilities": [0.00, 0.00],
             "generation_method": generation_method
         }
-                
-        self.initialize_qubit(generation_method,*args)
-        
+
+        self.initialize_qubit(generation_method, *args)
+
     def amplitudes_def(self):
-        self.attributes["amplitudes"][0] = complex(round(st.randbelow(10001) / 100, 2),round(st.randbelow(10001) / 100, 2))
-        self.attributes["amplitudes"][1] = complex(round(st.randbelow(10001) / 100, 2),round(st.randbelow(10001) / 100, 2))
+        self.attributes["amplitudes"][0] = complex(round(st.randbelow(10001) / 100, 2), round(st.randbelow(10001) / 100, 2))
+        self.attributes["amplitudes"][1] = complex(round(st.randbelow(10001) / 100, 2), round(st.randbelow(10001) / 100, 2))
         return self.attributes["amplitudes"]
-    
+
     def normalization(self):
-        module : int = abs(self.attributes["amplitudes"][0])**2 + abs(self.attributes["amplitudes"][1])**2
-        module_sqrt : int = math.sqrt(module)
-        if module!=1 : 
-            self.attributes["amplitudes"][0] = self.attributes["amplitudes"][0]/module_sqrt
-            self.attributes["amplitudes"][0] = complex(round(complex(self.attributes["amplitudes"][0]).real, 2), round(complex(self.attributes["amplitudes"][0]).imag, 2))
-            self.attributes["amplitudes"][1] = self.attributes["amplitudes"][1]/module_sqrt
-            self.attributes["amplitudes"][1] = complex(round(complex(self.attributes["amplitudes"][1]).real, 2), round(complex(self.attributes["amplitudes"][1]).imag, 2))
+        module = abs(self.attributes["amplitudes"][0])**2 + abs(self.attributes["amplitudes"][1])**2
+        module_sqrt = math.sqrt(module)
+        if module != 1:
+            self.attributes["amplitudes"][0] = self.attributes["amplitudes"][0] / module_sqrt
+            self.attributes["amplitudes"][0] = complex(round(self.attributes["amplitudes"][0].real, 2), round(self.attributes["amplitudes"][0].imag, 2))
+            self.attributes["amplitudes"][1] = self.attributes["amplitudes"][1] / module_sqrt
+            self.attributes["amplitudes"][1] = complex(round(self.attributes["amplitudes"][1].real, 2), round(self.attributes["amplitudes"][1].imag, 2))
         return self.attributes["amplitudes"]
-    
+
     def probability_def(self):
-        self.attributes["probabilities"][0] = round(abs(self.attributes["amplitudes"][0])**2,2)
-        self.attributes["probabilities"][1] = round(abs(self.attributes["amplitudes"][1])**2,2)
+        self.attributes["probabilities"][0] = round(abs(self.attributes["amplitudes"][0])**2, 2)
+        self.attributes["probabilities"][1] = round(abs(self.attributes["amplitudes"][1])**2, 2)
         return self.attributes["probabilities"]
-    
-    def initialize_qubit(
-                        self, 
-                         generation_method: str,
-                         *args
-                         ):
-        
+
+    def initialize_qubit(self, generation_method: str, *args):
         if generation_method == "generation":
             self.amplitudes_def()
             self.normalization()
             self.probability_def()
-
+            self.attributes["state"]["superposed"], self.value = 1, None
         elif generation_method == "attribution":
             if len(args) != 2:
-                raise ValueError(f'Le mode "attribution" nécessite deux arguments mais {len(args)} argument(s) ont été fournis.')
-            else : 
+                raise ValueError(f'Le mode "attribution" nécessite deux arguments mais {len(args)} argument(s) ont été fourni(s).')
+            else:
                 new_amplitudes_0, new_amplitudes_1 = args
                 self.attributes["amplitudes"] = [new_amplitudes_0, new_amplitudes_1]
                 self.normalization()
                 self.probability_def()
-                
         else:
             raise ValueError("Méthode de génération non reconnue. Utilisez 'generation' ou 'attribution'.")
-        
+
         self.attributes["state"]["created"] = 1
     
     """
@@ -90,10 +83,10 @@ class Qubits:
             self.attributes[key] = value
         else:
             raise KeyError(f"Clé '{key}' inexistante.")
-
+    """
     def __repr__(self):
         return str(self.attributes)
-    """
+
     
     def Measure_chained(
                 self,
@@ -130,61 +123,79 @@ class Qubits:
 def modify_qubit(qubit, value : str, after):
     qubit.attributes[value] = after
 
-class Register_qubits:
-    def __init__(self, 
-                 position_register_qubits: int,
-                 size: int,
-                 generation_method: str,
-                 *args
-                 ):
-        
+
+
+
+
+
+
+
+
+
+
+
+
+class Register_Qubits:
+    def __init__(
+        self, 
+        position_register_qubits: int,
+        size: int,
+        generation_method: str,
+        *args
+    ):
         self.attributes = {
-            "position_register_qubits": position_register_qubits,
-            "size": size,
-            "generation_method": generation_method
+            "position_register_qubits" : position_register_qubits,
+            "size" : size,
+            "generation_method" : generation_method,
+            "qubits" : []
         }
-        
-        self.qubits = []
-        
+        self.initialize_register(size, generation_method, *args)
+
+
+    def initialize_register(self, size: int, generation_method: str, *args):
         if generation_method == "generation":
             for n in range(size):
-                qubit = Qubits(position_register_qubits, n, 0, generation_method)
-                self.qubits.append(qubit)
-        
+                qubit = Qubits(self.attributes["position_register_qubits"], n, 0, generation_method)
+                self.attributes["qubits"].append(qubit)
         elif generation_method == "attribution":
             if len(args) != 2:
                 raise ValueError(f'Le mode "attribution" nécessite deux arguments pour les amplitudes, mais {len(args)} argument(s) ont été fourni(s).')
             new_amplitudes_0, new_amplitudes_1 = args
             for n in range(size):
-                qubit = Qubits(position_register_qubits, n, 0, generation_method, new_amplitudes_0, new_amplitudes_1)
-                self.qubits.append(qubit)
-            self.attributes["amplitudes"] = qubit.attributes["amplitudes"]
-            self.attributes["probabilties"] = qubit.attributes["probabilities"]
+                qubit = Qubits(self.attributes["position_register_qubits"], n, 0, generation_method, new_amplitudes_0, new_amplitudes_1)
+                self.attributes["qubits"].append(qubit)
+            self.attributes["amplitudes"] = [new_amplitudes_0, new_amplitudes_1]
+            self.attributes["probabilities"] = [abs(new_amplitudes_0)**2, abs(new_amplitudes_1)**2]
         else:
             raise ValueError("Méthode de génération non reconnue. Utilisez 'generation' ou 'attribution'.")
 
     def get_qubit(self, index: int):
         # Accéder à un qubit spécifique par son index
-        if 0 <= index < len(self.qubits):
-            return self.qubits[index]
+        if 0 <= index < len(self.attributes["qubits"]):
+            return self.attributes["qubits"][index]
         else:
             raise IndexError("Index de qubit invalide.")
-    
-    def __repr__(self):
-        qubits_info = ', '.join([str(qubit.attributes) for qubit in self.qubits])
-        return f"Register_qubits({self.attributes}, Qubits: [{qubits_info}])"
 
+    def __repr__(self):
+        qubits_info = ', '.join([str(qubit.attributes) for qubit in self.attributes["qubits"]])
+        return f"RegisterQubits({self.attributes}, Qubits: [{qubits_info}])"
+
+
+r_0 = Register_Qubits(0,1,"generation")
+#print(r_0.attributes["qubits"][0].attributes["value"])
+# 
+print(r_0.attributes["qubits"])
+
+def modify(qubit_position,register_number,end):
+    pass
 
 
 # Exemple d'utilisation
-r_0 = Register_qubits(0,2,"generation")
+
 
 # Accéder au premier qubit
-first_qubit = r_0.get_qubit(0)
 
-print(r_0)
 
-print("")
 
 # Utiliser la méthode de mesure de Qubits
 # first_qubit.Measure_chained(100000)
